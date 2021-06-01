@@ -1,16 +1,18 @@
 language: minimal
-addons:
-  apt:
-    packages:
-    - realpath
-
+#addons:
+#  apt:
+#    packages:
+#    - realpath
+arch:
+  - arm64
+os:
+  - linux
 services:
   - docker
 
-sudo: required
-before_script:
-  - echo never | sudo tee /sys/kernel/mm/transparent_hugepage/enabled >/dev/null
-  - echo never | sudo tee /sys/kernel/mm/transparent_hugepage/defrag >/dev/null
-
-script:
-  - ./test/detect-images.sh $TRAVIS_BRANCH $TRAVIS_COMMIT
+before_install:
+  - docker login -u "$DOCKER_USERNAME" -p $DOCKER_PASSWORD
+script: 
+  - cd percona-server-8.0
+  - docker build . -f Dockerfile -t toyangdon/percona:8.0
+  - docker push toyangdon/percona:8.0
